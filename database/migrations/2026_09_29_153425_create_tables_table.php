@@ -9,10 +9,13 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+        public function up(): void
     {
         Schema::create('tables', function (Blueprint $table) {
             $table->id();
+            $table->string('nomor_meja', 10)->unique();
+            $table->enum('status_meja', ['kosong', 'terisi'])->default('kosong');
+            $table->string('qr_code_url')->nullable();
             $table->timestamps();
         });
     }
