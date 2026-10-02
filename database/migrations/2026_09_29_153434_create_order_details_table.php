@@ -9,10 +9,15 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+        public function up(): void
     {
         Schema::create('order_details', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
+            $table->foreignId('menu_id')->constrained('menus');
+            $table->integer('jumlah');
+            $table->integer('subtotal');
+            $table->string('catatan_kustomisasi')->nullable(); // cth: "Hot", "Less sugar"
             $table->timestamps();
         });
     }
