@@ -50,7 +50,7 @@ class CustomerController extends Controller
             // ==========================================================
             // JURUS BYPASS: HARDCODE SERVER KEY (DIJAMIN KEBACA!)
             // ==========================================================
-            \Midtrans\Config::$serverKey = config('services.midtrans.serverKey');
+            \Midtrans\Config::$serverKey = 'Mid-server-lgJo_zKnyNNRD9iK22oN1GIy'; 
             \Midtrans\Config::$isProduction = false;
             \Midtrans\Config::$isSanitized = true;
             \Midtrans\Config::$is3ds = true;
