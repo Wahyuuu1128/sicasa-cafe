@@ -104,14 +104,94 @@
 
     </div>
 
-    <!-- PWA Service Worker Registration -->
+    <!-- ==========================================
+         PWA INSTALL POPUP BANNER (Menarik & Elegan)
+         ========================================== -->
+    <div id="pwaInstallBanner" class="hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 md:left-auto md:right-8 md:translate-x-0 z-50 w-[92%] max-w-md bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xl transition-all duration-300">
+        <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-xl bg-[#182B87] p-2 flex items-center justify-center flex-shrink-0 shadow-md">
+                <img src="{{ asset('images/logo.png') }}" alt="Sicasa Logo" class="w-full h-full object-contain">
+            </div>
+            <div class="flex-1">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h4 class="font-heading font-bold text-base text-[#182B87] leading-tight">Pasang Aplikasi Sicasa POS</h4>
+                        <span class="inline-block mt-1 bg-[#A8FF00]/40 text-[#182B87] text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Akses Instan & Offline</span>
+                    </div>
+                    <button onclick="dismissInstallBanner()" class="text-gray-400 hover:text-gray-600 p-1 -mr-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+                <p class="text-xs text-gray-500 mt-2 leading-relaxed">
+                    Instal Sicasa POS ke laptop atau tablet Anda untuk membuka kasir layar penuh tanpa browser, lebih cepat, dan siap digunakan saat offline.
+                </p>
+                <div class="flex items-center gap-2 mt-4">
+                    <button id="btnInstallPwa" class="flex-1 bg-[#182B87] hover:bg-blue-900 active:scale-95 text-white font-heading font-bold text-xs py-2.5 px-4 rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        <span>Pasang Sekarang</span>
+                    </button>
+                    <button onclick="dismissInstallBanner()" class="px-3 py-2.5 text-xs font-bold text-gray-500 hover:text-gray-700 rounded-xl hover:bg-gray-100 transition-colors">
+                        Nanti Saja
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PWA Service Worker Registration & Install Prompt Logic -->
     <script>
+        // 1. Registrasi Service Worker PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
                     .then(reg => console.log('PWA Service Worker registered:', reg.scope))
                     .catch(err => console.error('PWA Service Worker registration error:', err));
             });
+        }
+
+        // 2. Logika Banner Install PWA
+        let deferredPrompt;
+        const banner = document.getElementById('pwaInstallBanner');
+        const installBtn = document.getElementById('btnInstallPwa');
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+        if (!isStandalone) {
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                if (!sessionStorage.getItem('pwa_prompt_dismissed')) {
+                    banner.classList.remove('hidden');
+                }
+            });
+
+            // Tampilkan setelah delay jika belum terinstal dan belum di-dismiss
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    if (!isStandalone && !sessionStorage.getItem('pwa_prompt_dismissed')) {
+                        banner.classList.remove('hidden');
+                    }
+                }, 1200);
+            });
+        }
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('PWA Sicasa POS diinstal.');
+                }
+                deferredPrompt = null;
+                banner.classList.add('hidden');
+            } else {
+                alert("Untuk memasang aplikasi Sicasa POS:\n\n• PC/Laptop: Klik ikon instal (komputer dengan tanda panah) di bilah alamat browser (URL bar sebelah kanan).\n• Android: Buka menu Chrome (titik tiga) lalu pilih 'Pasang aplikasi'.\n• iOS: Ketuk tombol 'Share' lalu pilih 'Tambah ke Layar Utama'.");
+                banner.classList.add('hidden');
+            }
+        });
+
+        function dismissInstallBanner() {
+            banner.classList.add('hidden');
+            sessionStorage.setItem('pwa_prompt_dismissed', 'true');
         }
     </script>
 </body>
