@@ -5,56 +5,56 @@
     <!-- HEADER -->
     <div class="mb-8">
         <h2 class="font-heading text-2xl font-bold text-ink mb-1">
-            Selamat bertugas, {{ strtok(Auth::user()->name, ' ') }}! 👋
+            Selamat bertugas, {{ strtok(Auth::user()->name, ' ') }}!
         </h2>
         <p class="text-sm text-text-secondary">Berikut adalah ringkasan operasional shift kamu hari ini: <span class="font-bold text-ink">{{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}</span></p>
     </div>
 
-    <!-- KPI CARDS (Statistik Hari Ini) -->
+    <!-- KPI CARDS (Statistik Hari Ini - Selaras & Harmonis) -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <!-- Card 1: Total -->
-        <div class="bg-surface rounded-xl border border-gray-200 p-5 shadow-sm">
-            <div class="flex justify-between items-start mb-2">
-                <p class="text-xs font-bold text-text-secondary uppercase tracking-wider">Total Pesanan</p>
-                <div class="p-2 bg-gray-100 rounded-lg text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        <!-- Card 1: Total Pendapatan -->
+        <div class="bg-surface rounded-xl border border-blue-200/70 p-5 shadow-sm relative overflow-hidden">
+            <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-brand-blue"></div>
+            <div class="flex justify-between items-start mb-2 pl-2">
+                <p class="text-xs font-bold text-brand-blue uppercase tracking-wider">Total Pendapatan</p>
+                <div class="p-2 bg-blue-50 rounded-lg text-brand-blue">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                 </div>
             </div>
-            <h3 class="font-heading text-3xl font-bold text-ink">{{ $totalPesanan }}</h3>
+            <h3 class="font-heading text-2xl lg:text-3xl font-bold text-brand-blue pl-2 truncate">Rp{{ number_format($totalPendapatan, 0, ',', '.') }}</h3>
         </div>
 
-        <!-- Card 2: Menunggu Verifikasi -->
-        <div class="bg-surface rounded-xl border border-amber-200 p-5 shadow-sm relative overflow-hidden">
-            <!-- Accent Line -->
-            <div class="absolute left-0 top-0 bottom-0 w-1 bg-amber-400"></div>
+        <!-- Card 2: Kas Tunai di Laci -->
+        <div class="bg-surface rounded-xl border border-emerald-200/70 p-5 shadow-sm relative overflow-hidden">
+            <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-emerald-500"></div>
+            <div class="flex justify-between items-start mb-2 pl-2">
+                <p class="text-xs font-bold text-emerald-700 uppercase tracking-wider">Kas Tunai di Laci</p>
+                <div class="p-2 bg-emerald-50 rounded-lg text-emerald-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 12h.01M18 12h.01"></path></svg>
+                </div>
+            </div>
+            <h3 class="font-heading text-2xl lg:text-3xl font-bold text-emerald-600 pl-2 truncate">Rp{{ number_format($kasTunai, 0, ',', '.') }}</h3>
+        </div>
+
+        <!-- Card 3: Menunggu Verifikasi -->
+        <div class="bg-surface rounded-xl border border-amber-200/70 p-5 shadow-sm relative overflow-hidden">
+            <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-amber-400"></div>
             <div class="flex justify-between items-start mb-2 pl-2">
                 <p class="text-xs font-bold text-amber-700 uppercase tracking-wider">Perlu Verifikasi</p>
                 <div class="p-2 bg-amber-50 rounded-lg text-amber-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                 </div>
             </div>
             <h3 class="font-heading text-3xl font-bold text-amber-600 pl-2">{{ $menunggu }}</h3>
         </div>
 
-        <!-- Card 3: Diproses -->
-        <div class="bg-surface rounded-xl border border-brand-blue/30 p-5 shadow-sm relative overflow-hidden">
-            <div class="absolute left-0 top-0 bottom-0 w-1 bg-brand-blue"></div>
-            <div class="flex justify-between items-start mb-2 pl-2">
-                <p class="text-xs font-bold text-brand-blue uppercase tracking-wider">Diproses Dapur</p>
-                <div class="p-2 bg-blue-50 rounded-lg text-brand-blue">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                </div>
-            </div>
-            <h3 class="font-heading text-3xl font-bold text-brand-blue pl-2">{{ $diproses }}</h3>
-        </div>
-
-        <!-- Card 4: Selesai -->
-        <div class="bg-surface rounded-xl border border-green-200 p-5 shadow-sm relative overflow-hidden">
-            <div class="absolute left-0 top-0 bottom-0 w-1 bg-green-500"></div>
+        <!-- Card 4: Selesai Hari Ini -->
+        <div class="bg-surface rounded-xl border border-green-200/70 p-5 shadow-sm relative overflow-hidden">
+            <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-green-500"></div>
             <div class="flex justify-between items-start mb-2 pl-2">
                 <p class="text-xs font-bold text-green-700 uppercase tracking-wider">Selesai Hari Ini</p>
                 <div class="p-2 bg-green-50 rounded-lg text-green-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                 </div>
             </div>
             <h3 class="font-heading text-3xl font-bold text-green-600 pl-2">{{ $selesai }}</h3>
