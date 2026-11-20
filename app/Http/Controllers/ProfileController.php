@@ -34,6 +34,11 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
+        // Cek role: Kalau kasir, kembalikan ke profil kasir. Kalau bukan, ke profil default (owner).
+        if ($request->user()->role === 'kasir') {
+            return Redirect::route('kasir.profile')->with('status', 'profile-updated');
+        }
+
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
@@ -56,5 +61,12 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    public function editKasir(Request $request)
+    {
+        return view('kasir.profile', [
+            'user' => $request->user(),
+        ]);
     }
 }
