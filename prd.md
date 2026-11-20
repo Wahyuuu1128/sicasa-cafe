@@ -60,7 +60,7 @@ Membangun sistem informasi terintegrasi yang mencakup:
 
 ## 7. Technology Stack
 * **Backend:** Laravel
-* **Frontend Customer:** Mobile Web (Blade / HTML5, CSS3, JS)
+* **Frontend Customer:** Mobile Web (Blade / HTML5, Tailwin css, JS)
 * **Frontend POS:** Flutter / Web POS
 * **Database:** MySQL / PostgreSQL
 * **Hardware Integration:** Thermal Printer (ESC/POS) via USB/LAN/Bluetooth
