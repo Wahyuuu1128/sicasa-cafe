@@ -1,5 +1,10 @@
-const CACHE_NAME = 'sicasa-pos-v2';
+const CACHE_NAME = 'sicasa-pos-v3';
+const OFFLINE_URL = '/offline.html';
+
 const STATIC_ASSETS = [
+    '/',
+    '/sistem',
+    '/offline.html',
     '/manifest.json',
     '/icons/icon-192x192.png',
     '/icons/icon-512x512.png',
@@ -7,7 +12,7 @@ const STATIC_ASSETS = [
     '/images/sicasa.png'
 ];
 
-// Install: Cache static assets
+// Install: Pre-cache static assets & offline fallback
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME).then(cache => {
@@ -16,7 +21,7 @@ self.addEventListener('install', event => {
     );
 });
 
-// Activate: Clean up old cache versions
+// Activate: Clean up old cache versions & take control immediately
 self.addEventListener('activate', event => {
     event.waitUntil(
         caches.keys().then(keys => {
@@ -27,7 +32,7 @@ self.addEventListener('activate', event => {
     );
 });
 
-// Fetch: Handle network requests
+// Fetch: Network-first for pages, cache-first for assets, offline fallback
 self.addEventListener('fetch', event => {
     // Only handle GET requests
     if (event.request.method !== 'GET') {
@@ -36,17 +41,16 @@ self.addEventListener('fetch', event => {
 
     const url = new URL(event.request.url);
 
-    // Skip chrome-extension or other non-http(s) schemes
+    // Skip non-http(s)
     if (!url.protocol.startsWith('http')) {
         return;
     }
 
-    // Network-First for HTML navigation / dynamic routes (ensures fresh CSRF tokens & session)
+    // HTML Navigation requests
     if (event.request.mode === 'navigate' || event.request.headers.get('accept')?.includes('text/html')) {
         event.respondWith(
             fetch(event.request)
                 .then(networkResponse => {
-                    // Update cache with fresh response
                     if (networkResponse && networkResponse.status === 200) {
                         const responseClone = networkResponse.clone();
                         caches.open(CACHE_NAME).then(cache => {
@@ -56,19 +60,19 @@ self.addEventListener('fetch', event => {
                     return networkResponse;
                 })
                 .catch(async () => {
-                    // Fallback to cache if offline
+                    // Try to return matching cached page
                     const cachedResponse = await caches.match(event.request);
                     if (cachedResponse) {
                         return cachedResponse;
                     }
-                    // Or fallback to cached /sistem
-                    return caches.match('/sistem');
+                    // Otherwise return beautiful offline page
+                    return caches.match(OFFLINE_URL);
                 })
         );
         return;
     }
 
-    // Cache-First (with network fallback) for static assets
+    // Assets: Cache-first with network fallback & auto-cache
     event.respondWith(
         caches.match(event.request).then(cachedResponse => {
             if (cachedResponse) {
@@ -82,6 +86,11 @@ self.addEventListener('fetch', event => {
                     });
                 }
                 return networkResponse;
+            }).catch(() => {
+                // If offline and requesting an image, we can return null or cached logo
+                if (event.request.destination === 'image') {
+                    return caches.match('/images/logo.png');
+                }
             });
         })
     );
