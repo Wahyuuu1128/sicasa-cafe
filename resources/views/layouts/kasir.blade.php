@@ -38,38 +38,44 @@
             </div>
         </div>
 
-        <nav class="flex-1 overflow-y-auto py-5 px-3 space-y-1 hide-scrollbar">
+        <nav class="flex-1 overflow-y-auto py-5 px-3 space-y-1.5 hide-scrollbar">
             
-            <a href="{{ route('kasir.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-all {{ request()->routeIs('kasir.dashboard') ? 'bg-white/10 text-brand-lime' : 'text-white/70 hover:bg-white/5 hover:text-white' }}">
+            <!-- 1. Dashboard -->
+            <a href="{{ route('kasir.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('kasir.dashboard') ? 'bg-brand-lime text-ink font-bold shadow-md' : 'text-white/75 hover:bg-white/10 hover:text-brand-lime hover:translate-x-1' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>
-                Dashboard
+                <span>Dashboard</span>
             </a>
 
-            <a href="{{ route('kasir.menu') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-all {{ request()->routeIs('kasir.menu') ? 'bg-white/10 text-brand-lime' : 'text-white/70 hover:bg-white/5 hover:text-white' }}">
+            <!-- 2. Manajemen Menu -->
+            <a href="{{ route('kasir.menu') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('kasir.menu') ? 'bg-brand-lime text-ink font-bold shadow-md' : 'text-white/75 hover:bg-white/10 hover:text-brand-lime hover:translate-x-1' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path></svg>
-                Manajemen Menu
+                <span>Manajemen Menu</span>
             </a>
 
-            <a href="{{ route('kasir.pesanan') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg font-medium text-sm transition-all {{ request()->routeIs('kasir.pesanan') ? 'bg-brand-lime text-ink font-bold shadow-sm' : 'text-white/70 hover:bg-white/5 hover:text-white' }}">
+            <!-- 3. Pesanan Masuk -->
+            <a href="{{ route('kasir.pesanan') }}" class="flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('kasir.pesanan') ? 'bg-brand-lime text-ink font-bold shadow-md' : 'text-white/75 hover:bg-white/10 hover:text-brand-lime hover:translate-x-1' }}">
                 <div class="flex items-center gap-3">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
-                    Pesanan Masuk
+                    <span>Pesanan Masuk</span>
                 </div>
             </a>
 
-            <a href="{{ route('kasir.pos') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-all {{ request()->routeIs('kasir.pos') ? 'bg-brand-lime text-ink font-bold shadow-sm' : 'text-white/70 hover:bg-white/5 hover:text-white' }}">
+            <!-- 4. Point of Sales -->
+            <a href="{{ route('kasir.pos') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('kasir.pos') ? 'bg-brand-lime text-ink font-bold shadow-md' : 'text-white/75 hover:bg-white/10 hover:text-brand-lime hover:translate-x-1' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                Point of Sales
+                <span>Point of Sales</span>
             </a>
 
-            <a href="{{ route('kasir.history') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-all {{ request()->routeIs('kasir.history') ? 'bg-white/10 text-brand-lime' : 'text-white/70 hover:bg-white/5 hover:text-white' }}">
+            <!-- 5. Riwayat Transaksi -->
+            <a href="{{ route('kasir.history') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('kasir.history') ? 'bg-brand-lime text-ink font-bold shadow-md' : 'text-white/75 hover:bg-white/10 hover:text-brand-lime hover:translate-x-1' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                Riwayat Transaksi
+                <span>Riwayat Transaksi</span>
             </a>
 
-            <a href="{{ route('kasir.profile') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-all {{ request()->routeIs('kasir.profile') ? 'bg-white/10 text-brand-lime' : 'text-white/70 hover:bg-white/5 hover:text-white' }}">
+            <!-- 6. Profil Staf -->
+            <a href="{{ route('kasir.profile') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('kasir.profile') ? 'bg-brand-lime text-ink font-bold shadow-md' : 'text-white/75 hover:bg-white/10 hover:text-brand-lime hover:translate-x-1' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                Profil Staf
+                <span>Profil Staf</span>
             </a>
             
         </nav>

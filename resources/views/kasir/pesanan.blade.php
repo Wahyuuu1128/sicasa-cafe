@@ -7,16 +7,16 @@
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
             <h1 class="text-2xl font-bold text-[#182B87] tracking-tight">Pesanan Masuk (Dine-in)</h1>
-            <p class="text-gray-500 text-sm">Dashboard real-time. Klik kartu untuk detail, atau scan barcode tunai.</p>
+            <p class="text-gray-500 text-sm">Dashboard real-time. Klik kartu untuk detail, atau scan barcode / QR tunai.</p>
         </div>
         <div class="flex items-center gap-3 w-full md:w-auto">
             <!-- Tombol Scanner Utama -->
-            <button onclick="openScannerModal()" class="flex-1 md:flex-none bg-[#182B87] hover:bg-blue-900 text-white px-4 py-2.5 rounded-lg flex justify-center items-center gap-2 text-sm font-bold shadow-sm transition-colors">
+            <button onclick="openScannerModal()" class="flex-1 md:flex-none bg-[#182B87] hover:bg-blue-900 active:scale-95 text-white px-5 py-2.5 rounded-xl flex justify-center items-center gap-2 text-sm font-bold shadow-md transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h3"></path><path d="M20 7V4h-3"></path><path d="M4 17v3h3"></path><path d="M20 17v3h-3"></path><line x1="12" y1="9" x2="12" y2="15"></line></svg>
-                Scan Barcode
+                <span>Scan / Input Pembayaran</span>
             </button>
             <!-- Indikator Auto-Refresh -->
-            <div class="flex items-center gap-2 bg-[#F0F1EA] px-4 py-2.5 rounded-lg border border-gray-200">
+            <div id="live-indicator" class="flex items-center gap-2 bg-[#F0F1EA] px-4 py-2.5 rounded-xl border border-gray-200">
                 <span class="relative flex h-3 w-3">
                   <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#A8FF00] opacity-75"></span>
                   <span class="relative inline-flex rounded-full h-3 w-3 bg-[#85cc00]"></span>
@@ -33,9 +33,14 @@
              KOLOM 1: MENUNGGU VERIFIKASI 
              ========================================== -->
         <div class="bg-[#FFF8E7] rounded-2xl p-5 border border-amber-200/60 shadow-sm">
-            <h3 class="font-bold text-amber-900 mb-4 flex items-center gap-2 text-sm uppercase tracking-wide">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                Menunggu Verifikasi ({{ $pesananBaru->count() }})
+            <h3 class="font-bold text-amber-900 mb-4 flex items-center justify-between text-sm uppercase tracking-wide">
+                <span class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    Menunggu Verifikasi
+                </span>
+                <span id="badge-pesanan-baru" data-count="{{ $pesananBaru->count() }}" class="bg-amber-200 text-amber-900 text-xs px-2.5 py-0.5 rounded-full font-bold">
+                    {{ $pesananBaru->count() }}
+                </span>
             </h3>
 
             @if($pesananBaru->isEmpty())
@@ -67,7 +72,7 @@
                         </div>
 
                         <!-- MODAL POP-UP DETAIL PESANAN BARU -->
-                        <div id="modal-baru-{{ $order->id }}" class="hidden fixed inset-0 z-[50] bg-[#17191C]/60 backdrop-blur-sm flex items-center justify-center p-4">
+                        <div id="modal-baru-{{ $order->id }}" onclick="closeModal('modal-baru-{{ $order->id }}')" class="hidden fixed inset-0 z-[50] bg-[#17191C]/60 backdrop-blur-sm flex items-center justify-center p-4">
                             <div class="bg-white rounded-[1.5rem] w-full max-w-md overflow-hidden shadow-2xl relative" onclick="event.stopPropagation()">
                                 <div class="p-6">
                                     <div class="flex justify-between items-start mb-4">
@@ -86,7 +91,7 @@
                                         <ul class="space-y-2 max-h-48 overflow-y-auto pr-2">
                                             @foreach($order->orderDetails as $detail)
                                                 <li class="flex justify-between items-start text-sm">
-                                                    <span class="font-medium text-gray-800"><span class="font-bold text-[#182B87] mr-1">{{ $detail->jumlah }}x</span> {{ $detail->menu->nama_menu }}</span>
+                                                    <span class="font-medium text-gray-800"><span class="font-bold text-[#182B87] mr-1">{{ $detail->jumlah }}x</span> {{ $detail->menu->nama_menu ?? 'Menu' }}</span>
                                                     <span class="text-gray-600 text-xs mt-0.5">Rp{{ number_format($detail->subtotal, 0, ',', '.') }}</span>
                                                 </li>
                                             @endforeach
@@ -99,15 +104,15 @@
                                     </div>
 
                                     <!-- LOGIKA TOMBOL BERDASARKAN METODE BAYAR -->
-                                    @if(strtolower($order->payment) == 'tunai')
-                                        <button type="button" onclick="openScannerModal()" class="w-full bg-[#182B87] hover:bg-blue-900 text-white font-bold py-3.5 rounded-xl transition-all flex justify-center items-center gap-2">
+                                    @if(strtolower($order->payment) == 'tunai' || strtolower($order->payment) == 'cash')
+                                        <button type="button" onclick="closeModal('modal-baru-{{ $order->id }}'); openScannerModal();" class="w-full bg-[#182B87] hover:bg-blue-900 text-white font-bold py-3.5 rounded-xl transition-all flex justify-center items-center gap-2 shadow-md">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h3"></path><path d="M20 7V4h-3"></path><path d="M4 17v3h3"></path><path d="M20 17v3h-3"></path><line x1="12" y1="9" x2="12" y2="15"></line></svg>
-                                            Scan Barcode Tunai
+                                            Scan / Input Barcode Tunai
                                         </button>
                                     @else
                                         <form action="{{ route('kasir.verify', $order->id) }}" method="POST">
                                             @csrf
-                                            <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3.5 rounded-xl transition-all flex justify-center items-center gap-2">
+                                            <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3.5 rounded-xl transition-all flex justify-center items-center gap-2 shadow-md">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                                                 Verifikasi Pembayaran QRIS
                                             </button>
@@ -126,9 +131,14 @@
              KOLOM 2: PESANAN DIPROSES / LUNAS 
              ========================================== -->
         <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
-            <h3 class="font-bold text-[#182B87] mb-4 flex items-center gap-2 text-sm uppercase tracking-wide">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"></path><line x1="6" y1="17" x2="18" y2="17"></line></svg>
-                Diproses / Lunas ({{ $diproses->count() }})
+            <h3 class="font-bold text-[#182B87] mb-4 flex items-center justify-between text-sm uppercase tracking-wide">
+                <span class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"></path><line x1="6" y1="17" x2="18" y2="17"></line></svg>
+                    Diproses / Lunas
+                </span>
+                <span class="bg-blue-100 text-[#182B87] text-xs px-2.5 py-0.5 rounded-full font-bold">
+                    {{ $diproses->count() }}
+                </span>
             </h3>
 
             @if($diproses->isEmpty())
@@ -157,7 +167,7 @@
                         </div>
 
                         <!-- MODAL POP-UP DETAIL PESANAN DIPROSES -->
-                        <div id="modal-proses-{{ $order->id }}" class="hidden fixed inset-0 z-[50] bg-[#17191C]/60 backdrop-blur-sm flex items-center justify-center p-4">
+                        <div id="modal-proses-{{ $order->id }}" onclick="closeModal('modal-proses-{{ $order->id }}')" class="hidden fixed inset-0 z-[50] bg-[#17191C]/60 backdrop-blur-sm flex items-center justify-center p-4">
                             <div class="bg-white rounded-[1.5rem] w-full max-w-md overflow-hidden shadow-2xl relative" onclick="event.stopPropagation()">
                                 <div class="p-6">
                                     <div class="flex justify-between items-start mb-4">
@@ -176,14 +186,14 @@
                                         <ul class="space-y-2 max-h-48 overflow-y-auto pr-2">
                                             @foreach($order->orderDetails as $detail)
                                                 <li class="flex justify-between items-start text-sm">
-                                                    <span class="font-medium text-gray-800"><span class="font-bold text-[#182B87] mr-1">{{ $detail->jumlah }}x</span> {{ $detail->menu->nama_menu }}</span>
+                                                    <span class="font-medium text-gray-800"><span class="font-bold text-[#182B87] mr-1">{{ $detail->jumlah }}x</span> {{ $detail->menu->nama_menu ?? 'Menu' }}</span>
                                                 </li>
                                             @endforeach
                                         </ul>
                                     </div>
 
                                     <div class="flex gap-3 mt-2">
-                                        <!-- Tombol Cetak -->
+                                        <!-- Tombol Cetak Struk -->
                                         <a href="{{ route('kasir.print', $order->id) }}" target="_blank" class="w-1/3 bg-[#17191C] hover:bg-gray-800 text-white flex justify-center items-center py-3.5 rounded-xl text-sm font-bold transition-colors" title="Cetak Struk">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
                                         </a>
@@ -191,7 +201,7 @@
                                         <!-- Tombol Selesai -->
                                         <form action="{{ route('kasir.complete', $order->id) }}" method="POST" class="w-2/3">
                                             @csrf
-                                            <button type="submit" onclick="return confirm('Tandai pesanan ini selesai dan meja tersedia kembali?')" class="w-full bg-[#A8FF00] hover:bg-[#95e600] text-[#182B87] flex justify-center items-center gap-2 py-3.5 rounded-xl text-sm font-bold transition-colors">
+                                            <button type="submit" onclick="return confirm('Tandai pesanan ini selesai dan meja tersedia kembali?')" class="w-full bg-[#A8FF00] hover:bg-[#95e600] text-[#182B87] flex justify-center items-center gap-2 py-3.5 rounded-xl text-sm font-bold transition-colors shadow-sm">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                                                 Tandai Selesai
                                             </button>
@@ -211,14 +221,14 @@
 <!-- ==========================================
      MODAL GLOBAL SCANNER (Tersembunyi)
      ========================================== -->
-<div id="scannerModal" class="hidden fixed inset-0 z-[60] bg-[#17191C]/90 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-[1.5rem] w-full max-w-md overflow-hidden shadow-2xl relative">
+<div id="scannerModal" onclick="closeScannerModal()" class="hidden fixed inset-0 z-[60] bg-[#17191C]/90 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-[1.5rem] w-full max-w-md overflow-hidden shadow-2xl relative" onclick="event.stopPropagation()">
         
         <!-- Header Scanner -->
         <div class="bg-[#182B87] text-white px-6 py-4 flex justify-between items-center">
             <h3 class="font-bold tracking-wider text-sm flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A8FF00" stroke-width="2"><path d="M4 7V4h3"></path><path d="M20 7V4h-3"></path><path d="M4 17v3h3"></path><path d="M20 17v3h-3"></path><line x1="12" y1="9" x2="12" y2="15"></line></svg>
-                SCANNER PEMBAYARAN
+                SCANNER PEMBAYARAN TUNAI
             </h3>
             <button onclick="closeScannerModal()" class="text-white/70 hover:text-white transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -229,16 +239,20 @@
             <!-- Tampilan Kamera -->
             <div id="reader" class="w-full rounded-xl overflow-hidden border-2 border-dashed border-gray-300 mb-4 bg-white"></div>
             
-            <!-- Input Manual Fisik -->
-            <form id="manualForm" onsubmit="handleManualSubmit(event)">
+            <!-- Input Manual Fisik (Dengan Tombol Khusus Tablet) -->
+            <form id="manualForm" onsubmit="handleManualSubmit(event)" class="space-y-3">
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Atau Input Kode Manual</label>
                 <div class="relative">
-                    <input type="text" id="manual_code" placeholder="Atau Input Manual (Cth: SICASA-44)" class="w-full bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#182B87] focus:border-[#182B87] block p-3 text-center uppercase font-bold" required autocomplete="off">
+                    <input type="text" id="manual_code" placeholder="Cth: SICASA-44 atau 44" class="w-full bg-white border-2 border-gray-300 text-gray-900 text-base rounded-xl focus:ring-[#182B87] focus:border-[#182B87] block p-3.5 text-center uppercase font-bold tracking-wider" required autocomplete="off">
                 </div>
-                <!-- Tombol submit disembunyikan, biar kasir cuma perlu pencet Enter -->
-                <button type="submit" class="hidden">Submit</button>
+                <!-- Tombol Submit Touchscreen / Tablet -->
+                <button type="submit" id="btn-submit-manual" class="w-full bg-[#182B87] hover:bg-blue-900 active:scale-95 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm sm:text-base">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <span>Verifikasi Pembayaran</span>
+                </button>
             </form>
             
-            <!-- Kotak Peringatan/Sukses -->
+            <!-- Kotak Peringatan / Sukses -->
             <div id="scanResult" class="hidden mt-4 p-4 rounded-xl text-center font-bold text-sm text-white shadow-md"></div>
         </div>
     </div>
@@ -252,17 +266,53 @@
     let isModalOpen = false;
     let html5QrcodeScanner = null;
     let isProcessing = false;
+    let lastNewOrdersCount = {{ $pesananBaru->count() }};
+
+    // SUARA NOTIFIKASI PESANAN BARU
+    function playNewOrderChime() {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.15); // A5
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.45);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.45);
+        } catch(e) {}
+    }
+
+    // SUARA BEEP KASIR SAAT SCAN BERHASIL
+    function playBeep() {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = 'sine';
+            osc.frequency.value = 850; 
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.15);
+        } catch(e) {}
+    }
 
     // FUNGSI MODAL PESANAN
     function openModal(id) {
         document.getElementById(id).classList.remove('hidden');
-        document.body.style.overflow = 'hidden'; // Kunci scroll background
+        document.body.style.overflow = 'hidden';
         isModalOpen = true;
     }
 
     function closeModal(id) {
         document.getElementById(id).classList.add('hidden');
-        document.body.style.overflow = ''; // Buka kunci scroll
+        document.body.style.overflow = '';
         isModalOpen = false;
     }
 
@@ -272,14 +322,27 @@
         document.querySelectorAll('[id^="modal-proses-"]').forEach(el => el.classList.add('hidden'));
         
         document.getElementById('scannerModal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden'; // Kunci scroll background untuk scanner
+        document.body.style.overflow = 'hidden';
         isModalOpen = true;
 
         if(!html5QrcodeScanner) {
+            // Konfigurasi format yang didukung: QR Code dan berbagai barcode 1D
+            const formats = [
+                Html5QrcodeSupportedFormats.QR_CODE,
+                Html5QrcodeSupportedFormats.CODE_128,
+                Html5QrcodeSupportedFormats.CODE_39,
+                Html5QrcodeSupportedFormats.EAN_13,
+                Html5QrcodeSupportedFormats.UPC_A
+            ];
+
             html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
-                fps: 10, 
+                fps: 15, 
                 qrbox: {width: 250, height: 250},
-                supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
+                supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
+                formatsToSupport: formats,
+                experimentalFeatures: {
+                    useBarCodeDetectorIfSupported: true
+                }
             }, false);
         }
         
@@ -291,7 +354,7 @@
 
     function closeScannerModal() {
         document.getElementById('scannerModal').classList.add('hidden');
-        document.body.style.overflow = ''; // Buka kunci scroll saat scanner ditutup
+        document.body.style.overflow = '';
         isModalOpen = false;
         isProcessing = false;
         
@@ -302,35 +365,22 @@
         }
     }
 
-    // SUARA BEEP KASIR
-    function playBeep() {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        oscillator.type = 'sine';
-        oscillator.frequency.value = 800; 
-        gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
-        oscillator.start(audioCtx.currentTime);
-        oscillator.stop(audioCtx.currentTime + 0.1);
-    }
-
     // PROSES SCAN (KAMERA)
     function onScanSuccess(decodedText) {
         if(isProcessing) return;
         playBeep();
-        html5QrcodeScanner.pause(true); // Jeda kamera
+        if(html5QrcodeScanner) {
+            html5QrcodeScanner.pause(true);
+        }
         processPaymentAjax(decodedText);
     }
-    function onScanFailure(error) { /* Abaikan error pencarian frame */ }
+    function onScanFailure(error) { /* Mengabaikan frame tanpa kode */ }
 
-    // PROSES SCAN (MANUAL / ALAT SCANNER FISIK)
+    // PROSES SCAN (MANUAL / ALAT SCANNER FISIK / TOMBOL VERIFIKASI)
     function handleManualSubmit(e) {
-        e.preventDefault();
+        if(e) e.preventDefault();
         if(isProcessing) return;
-        let code = document.getElementById('manual_code').value.trim().toUpperCase();
+        let code = document.getElementById('manual_code').value.trim();
         if(code) {
             playBeep();
             if(html5QrcodeScanner && html5QrcodeScanner.getState() === Html5QrcodeScannerState.SCANNING) {
@@ -340,10 +390,15 @@
         }
     }
 
-    // KIRIM DATA KE BACKEND (Controller yg udah kita buat)
+    // KIRIM DATA KE BACKEND
     function processPaymentAjax(qrCodeValue) {
         isProcessing = true;
         let scanResultBox = document.getElementById('scanResult');
+        let btnSubmit = document.getElementById('btn-submit-manual');
+        if (btnSubmit) {
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = '<span>Memverifikasi...</span>';
+        }
         
         fetch('{{ route("kasir.scanner.process") }}', {
             method: 'POST',
@@ -360,24 +415,27 @@
                 scanResultBox.className = "mt-4 p-4 rounded-xl text-center font-bold text-sm text-[#182B87] bg-[#A8FF00] shadow-md";
                 scanResultBox.innerText = data.message;
                 
-                // Kalau sukses, tutup scanner dan reload halaman buat mindahin order
+                // Tutup scanner dan reload agar data berpindah
                 setTimeout(() => {
                     closeScannerModal();
                     window.location.reload();
-                }, 1500);
+                }, 1200);
             } else {
                 scanResultBox.className = "mt-4 p-4 rounded-xl text-center font-bold text-sm text-white bg-red-600 shadow-md";
                 scanResultBox.innerText = data.message;
                 
-                // Reset form buat nyoba lagi
                 setTimeout(() => {
                     scanResultBox.classList.add('hidden');
                     document.getElementById('manual_code').value = '';
                     isProcessing = false;
+                    if (btnSubmit) {
+                        btnSubmit.disabled = false;
+                        btnSubmit.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Verifikasi Pembayaran</span>';
+                    }
                     if(html5QrcodeScanner && html5QrcodeScanner.getState() === Html5QrcodeScannerState.PAUSED) {
                         html5QrcodeScanner.resume();
                     }
-                }, 2500);
+                }, 2000);
             }
         })
         .catch(error => {
@@ -385,22 +443,49 @@
             scanResultBox.className = "mt-4 p-4 rounded-xl text-center font-bold text-sm text-white bg-red-600 shadow-md";
             scanResultBox.innerText = "Error! Gagal menghubungi server.";
             isProcessing = false;
+            if (btnSubmit) {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Verifikasi Pembayaran</span>';
+            }
         });
     }
 
-    // AUTO-REFRESH HALAMAN (Tiap 5 Detik)
+    // AUTO-REFRESH HALAMAN REAL-TIME (Tiap 3 Detik dengan Anti-Cache)
     setInterval(() => {
         if (!isModalOpen) {
-            fetch(window.location.href)
-                .then(response => response.text())
-                .then(html => {
-                    let parser = new DOMParser();
-                    let doc = parser.parseFromString(html, 'text/html');
-                    document.getElementById('pos-board').innerHTML = doc.getElementById('pos-board').innerHTML;
-                })
-                .catch(err => console.error('Gagal fetch data terbaru', err));
+            const url = new URL(window.location.href);
+            url.searchParams.set('_t', Date.now()); // Anti-cache browser
+
+            fetch(url.toString(), {
+                cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                let parser = new DOMParser();
+                let doc = parser.parseFromString(html, 'text/html');
+                
+                const newBoard = doc.getElementById('pos-board');
+                if (newBoard) {
+                    const newBadge = doc.getElementById('badge-pesanan-baru');
+                    if (newBadge) {
+                        const newCount = parseInt(newBadge.getAttribute('data-count') || '0');
+                        if (newCount > lastNewOrdersCount) {
+                            playNewOrderChime();
+                        }
+                        lastNewOrdersCount = newCount;
+                    }
+                    
+                    document.getElementById('pos-board').innerHTML = newBoard.innerHTML;
+                }
+            })
+            .catch(err => console.error('Gagal fetch data terbaru', err));
         }
-    }, 5000);
+    }, 3000);
     
 </script>
 
@@ -408,8 +493,8 @@
     /* Kustomisasi tombol bawaan HTML5 QR Code agar lebih rapi */
     #reader { border: none !important; }
     #reader button {
-        background-color: #182B87; color: white; border: none; padding: 8px 16px; border-radius: 8px;
-        font-size: 12px; font-weight: bold; cursor: pointer; margin-bottom: 10px;
+        background-color: #182B87; color: white; border: none; padding: 10px 18px; border-radius: 10px;
+        font-size: 13px; font-weight: bold; cursor: pointer; margin-bottom: 12px; transition: all 0.2s;
     }
     #reader button:hover { background-color: #0d1a5c; }
     #reader__dashboard_section_csr span { color: #6b7280; font-size: 12px; }
