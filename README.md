@@ -234,18 +234,6 @@ sicasa-cafe/
 
 ---
 
-## 👨‍💻 Tim Pengembang (Development Team)
-
-Project ini dikembangkan sebagai solusi digitalisasi operasional cafe dan pemenuhan tugas akademik:
-
-* **Wahyu Rahmat Ilahi** — *Project Lead & Full-Stack Developer* ([@Wahyuuu1128](https://github.com/Wahyuuu1128))
-* **Nuraisyah Hasibuan** — *Developer* ([@aisyahasibuan18-boop](https://github.com/aisyahasibuan18-boop))
-* **Natasha Faradiva** — *Developer* ([@natashafaradiva](https://github.com/natashafaradiva))
-* **Syiwa Azzahra** — *Developer* ([@shywa1612](https://github.com/shywa1612))
-* **Tirtuyyy** — *Developer* ([@tirtuyyy01](https://github.com/tirtuyyy01))
-
----
-
 ## 📄 Lisensi (License)
 
 Project ini didistribusikan di bawah lisensi terbuka [MIT License](LICENSE).
