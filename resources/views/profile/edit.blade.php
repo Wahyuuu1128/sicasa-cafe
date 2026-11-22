@@ -56,5 +56,20 @@
             </form>
         </div>
 
+        <!-- Sesi & Logout -->
+        <div class="col-span-1 lg:col-span-2 bg-surface rounded-xl border border-gray-200 p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h3 class="font-heading text-lg font-bold text-ink">Keluar dari Sesi</h3>
+                <p class="text-xs text-text-secondary mt-0.5">Akhiri sesi login Anda di perangkat ini dengan aman.</p>
+            </div>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-semibold text-sm px-6 py-2.5 rounded-lg transition-colors flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Keluar / Logout
+                </button>
+            </form>
+        </div>
+
     </div>
 @endsection
