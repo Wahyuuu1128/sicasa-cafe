@@ -42,6 +42,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/sistem');
+        return redirect('/sistem')->with('status', 'Anda telah berhasil keluar dari sistem.');
     }
 }

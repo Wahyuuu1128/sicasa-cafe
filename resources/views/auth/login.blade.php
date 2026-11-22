@@ -42,6 +42,13 @@
             <h1 class="font-heading text-3xl md:text-4xl font-bold text-[#182B87] mb-2 tracking-tight">Selamat Datang</h1>
             <p class="text-gray-500 text-sm mb-6 leading-relaxed">Silakan masuk menggunakan kredensial staf atau pemilik yang valid.</p>
 
+            @if (session('status'))
+                <div class="mb-5 p-3 rounded-xl bg-green-50 border border-green-200 text-green-700 text-xs font-semibold flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <span>{{ session('status') }}</span>
+                </div>
+            @endif
+
             @if ($errors->any())
                 <div class="mb-5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-semibold">
                     {{ $errors->first() }}
