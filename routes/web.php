@@ -14,10 +14,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 // ==========================================
-// 1. HALAMAN UTAMA SISTEM (REDIRECT KE /sistem)
+// 1. HALAMAN UTAMA SISTEM (REDIRECT KE /qr/meja UNTUK PELANGGAN)
 // ==========================================
 Route::get('/', function () {
-    return redirect('/sistem');
+    return redirect()->route('customer.landing');
 })->name('landing');
 
 // ==========================================
@@ -49,6 +49,7 @@ Route::prefix('kasir')->middleware(['auth', 'role:kasir'])->group(function () {
     // 3.1 Dashboard & Riwayat
     Route::get('/dashboard', [PosController::class, 'dashboard'])->name('kasir.dashboard');
     Route::get('/riwayat', [PosController::class, 'history'])->name('kasir.history');
+    Route::get('/export-laporan', [PosController::class, 'export'])->name('kasir.export');
     
     // 3.2 Pesanan Masuk (Dine-in)
     Route::get('/pesanan-masuk', [PosController::class, 'index'])->name('kasir.pesanan');
@@ -117,6 +118,7 @@ Route::get('/qr/cash/{order_id}', [App\Http\Controllers\CustomerController::clas
 
 // Rute Pengecekan Status & Nota (Pelanggan)
 Route::get('/qr/check-status/{order_id}', [App\Http\Controllers\CustomerController::class, 'checkStatus']);
+Route::post('/qr/simulasi-qris/{order_id}', [App\Http\Controllers\CustomerController::class, 'simulateQrisPayment'])->name('customer.qris.simulate');
 Route::get('/qr/nota/{order_id}', [App\Http\Controllers\CustomerController::class, 'nota'])->name('customer.nota');
 
 // Rute Webhook/Callback Midtrans

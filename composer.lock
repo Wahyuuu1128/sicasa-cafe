@@ -2093,8 +2093,7 @@
                 "issues": "https://github.com/Midtrans/midtrans-php/issues",
                 "source": "https://github.com/Midtrans/midtrans-php/tree/v2.6.2"
             },
-            "time": "2025-03-18T06:30:17+00:00",
-            "published-time": "2025-03-18T06:36:14+00:00"
+            "time": "2025-03-18T06:30:17+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -8583,5 +8582,5 @@
         "php": "^8.3"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.11.0"
+    "plugin-api-version": "2.6.0"
 }

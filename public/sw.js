@@ -12,7 +12,6 @@ const STATIC_ASSETS = [
     '/images/sicasa.png'
 ];
 
-// Install: Pre-cache static assets & offline fallback
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME).then(cache => {
